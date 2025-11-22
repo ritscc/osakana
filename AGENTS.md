@@ -119,7 +119,7 @@ osakana/
 #### 2. Get Current Questions
 
 - **Method**: `GET`
-- **Path**: `/current_questions`
+- **Path**: `/questions/current`
 - **Response**:
   ```json
   {
@@ -283,7 +283,7 @@ interface Question {
 
 2. Client stores user_id in cookie
 
-3. Client → GET /current_questions
+3. Client → GET /questions/current
    Server returns current question set
 
 4. Client → GET /sse

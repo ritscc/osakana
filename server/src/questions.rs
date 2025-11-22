@@ -31,10 +31,23 @@ impl Question {
     }
 }
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct Questions {
     current: Vec<Question>,
+    total_time: Duration,
     remaining_time: Duration,
+}
+
+impl Default for Questions {
+    fn default() -> Self {
+        let default_total_time = Duration::from_mins(1);
+
+        Questions {
+            current: Vec::default(),
+            total_time: default_total_time,
+            remaining_time: default_total_time,
+        }
+    }
 }
 
 impl Questions {
@@ -55,6 +68,10 @@ impl Questions {
             .enumerate()
             .map(|(index, kanji)| Question::new(index, kanji))
             .collect();
+    }
+
+    pub fn set_total_time(&mut self, time: Duration) {
+        self.total_time = time;
     }
 
     pub fn decrease_remaining_time(&mut self, duration: Duration) {
