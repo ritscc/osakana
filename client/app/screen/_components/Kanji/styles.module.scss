@@ -5,6 +5,10 @@
   justify-content: center;
 }
 
+.containerCorrect .yomi {
+  color: #facc15;
+}
+
 .yomi {
   margin-bottom: 1rem;
   font-size: 1.875rem; /* text-3xl (same as title) */
@@ -28,6 +32,13 @@
     width: 12rem;
     height: 12rem;
   }
+}
+
+.splitter {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 // アニメーション定義

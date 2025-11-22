@@ -28,7 +28,7 @@ export default function Kanji({
   const yomiEnterTotalDelay = 1.35 + 1.2 + enterBaseDelay;
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${isCorrect ? styles.containerCorrect : ""}`}>
       <div 
         className={`${styles.yomi} ${
           animationState === "exiting" ? styles.exitingYomi : 
@@ -63,6 +63,7 @@ export default function Kanji({
           kanji={kanji}
           isHidden={!isCorrect}
           width="70%"
+          className={styles.splitter}
         />
       </BubbleContainer>
     </div>
