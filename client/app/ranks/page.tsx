@@ -1,4 +1,4 @@
-import Rank from "./components/rank";
+import Rank from "./_components/rank";
 
 export default function RankPage() {
   const testPlayers = [
@@ -6,7 +6,7 @@ export default function RankPage() {
     { id: "2", name: "Bob", score: 75 },
     { id: "3", name: "Carol", score: 88 },
     { id: "4", name: "Dave", score: 60 },
-     { id: "5", name: "Alice", score: 50 },
+    { id: "5", name: "Alice", score: 50 },
   ];
 
   return (

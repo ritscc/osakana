@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
 type Player = {
@@ -11,7 +11,7 @@ type Player = {
 };
 
 export default function Rank({ players }: { players: Player[] }) {
-    const crowns = [
+  const crowns = [
     "/crowns/ranking_crown_no1.png",
     "/crowns/ranking_crown_no2.png",
     "/crowns/ranking_crown_no3.png",
@@ -19,7 +19,9 @@ export default function Rank({ players }: { players: Player[] }) {
   return (
     <Card className="w-full max-w-xl mx-auto shadow-lg rounded-2xl">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold text-center">ランキング</CardTitle>
+        <CardTitle className="text-2xl font-bold text-center">
+          ランキング
+        </CardTitle>
       </CardHeader>
 
       <CardContent>
@@ -50,3 +52,4 @@ export default function Rank({ players }: { players: Player[] }) {
     </Card>
   );
 }
+
