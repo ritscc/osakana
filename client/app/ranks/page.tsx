@@ -1,17 +1,38 @@
 import Rank from "./_components/rank";
 
-export default function RankPage() {
-  const testPlayers = [
-    { id: "1", name: "Alice", score: 92 },
-    { id: "2", name: "Bob", score: 75 },
-    { id: "3", name: "Carol", score: 88 },
-    { id: "4", name: "Dave", score: 60 },
-    { id: "5", name: "Alice", score: 50 },
-  ];
+type User = {
+  id: string;
+  username: string | null;
+  combo: number;
+};
+
+type RankingResponse = {
+  ranking: User[];
+};
+
+export default async function RankPage() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/ranking`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch ranking data");
+  }
+
+  const data: RankingResponse = await res.json();
+
+  const players = data.ranking.map((user) => ({
+    id: user.id,
+    name: user.username ?? "Unknown",
+    score: user.combo,
+  }));
 
   return (
     <div className="min-h-screen px-4 py-10 bg-gray-50 dark:bg-gray-900">
-      <Rank players={testPlayers} />
+      <Rank players={players} />
     </div>
   );
 }
