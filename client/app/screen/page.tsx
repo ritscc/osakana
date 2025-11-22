@@ -26,10 +26,12 @@ export default function Screen() {
   const [correctAnswers, setCorrectAnswers] = useState<Set<number>>(new Set());
 
   const markAsCorrect = (unicode: number) => {
+    if (isEntering) return;
     setCorrectAnswers(prev => new Set(prev).add(unicode));
   };
 
   const handleReload = async () => {
+    if (isEntering) return;
     await new Promise(resolve => setTimeout(resolve, 500));
 
     const newQuestions = [...INITIAL_QUESTIONS]
@@ -68,7 +70,7 @@ export default function Screen() {
                 key={q.unicode} 
                 className={styles.cardWrapper}
                 onClick={() => markAsCorrect(q.unicode)}
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: isEntering ? 'default' : 'pointer' }}
               >
                 <QuestionCard
                   unicode={q.unicode}
@@ -102,7 +104,11 @@ export default function Screen() {
           )}
         </div>
 
-        <button onClick={handleReload} className={styles.reloadButton}>
+        <button 
+          onClick={handleReload} 
+          className={styles.reloadButton}
+          disabled={isEntering}
+        >
           問題を入れ替える
         </button>
       </div>
