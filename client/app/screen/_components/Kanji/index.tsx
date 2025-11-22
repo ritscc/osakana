@@ -3,24 +3,24 @@ import BubbleContainer from "../BubbleContainer"
 import styles from "./styles.module.scss"
 
 type kanjiProps = {
-  questionnum: number
-  answerkanji: string
-  yomikanji: string
-  description: string
+  id: number
+  kanji: string
+  yomi: string
+  difficulty: number
 }
 
-export default function Kanji({ questionnum, answerkanji, yomikanji, description }: kanjiProps) {
+export default function Kanji({ id, kanji, yomi, difficulty }: kanjiProps) {
   return (
     <div className={styles.container}>
       {/* 読み */}
       <div className={styles.yomi}>
-        {yomikanji}
+        {yomi}
       </div>
 
       {/* 漢字を表示する泡 */}
       <BubbleContainer className={styles.bubble}>
         <KanjiSplitter
-          char={answerkanji}
+          kanji={kanji}
           isHidden={true}
           width="70%"
         />

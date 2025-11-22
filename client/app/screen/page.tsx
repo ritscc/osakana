@@ -7,16 +7,16 @@ import styles from "./styles/Screen.module.scss";
 
 // デモ用データ
 const INITIAL_QUESTIONS = [
-  { id: 1, yomi: "まぐろ", kanji: "鮪" },
-  { id: 2, yomi: "いわし", kanji: "鰯" },
-  { id: 3, yomi: "あじ", kanji: "鯵" },
-  { id: 4, yomi: "さけ", kanji: "鮭" },
-  { id: 5, yomi: "さば", kanji: "鯖" },
-  { id: 6, yomi: "かつお", kanji: "鰹" },
-  { id: 7, yomi: "たい", kanji: "鯛" },
-  { id: 8, yomi: "たら", kanji: "鱈" },
-  { id: 9, yomi: "ぶり", kanji: "鰤" },
-  { id: 10, yomi: "あゆ", kanji: "鮎" },
+  { id: 1, yomi: "まぐろ", kanji: "鮪", difficulty: 1 },
+  { id: 2, yomi: "いわし", kanji: "鰯", difficulty: 1 },
+  { id: 3, yomi: "あじ", kanji: "鯵", difficulty: 1 },
+  { id: 4, yomi: "さけ", kanji: "鮭", difficulty: 1 },
+  { id: 5, yomi: "さば", kanji: "鯖", difficulty: 1 },
+  { id: 6, yomi: "かつお", kanji: "鰹", difficulty: 2 },
+  { id: 7, yomi: "たい", kanji: "鯛", difficulty: 2 },
+  { id: 8, yomi: "たら", kanji: "鱈", difficulty: 2 },
+  { id: 9, yomi: "ぶり", kanji: "鰤", difficulty: 2 },
+  { id: 10, yomi: "あゆ", kanji: "鮎", difficulty: 3 },
 ];
 
 export default function Screen() {
@@ -39,7 +39,7 @@ export default function Screen() {
                 id={q.id}
                 yomi={q.yomi}
                 kanji={q.kanji}
-                description="魚の説明"
+                difficulty={q.difficulty}
               />
             </div>
           ))}

@@ -4,14 +4,14 @@ import { useEffect, useState } from 'react';
 import styles from "./styles.module.scss";
 
 interface KanjiSplitterProps {
-  char?: string;
+  kanji?: string;
   width?: number | string;
   isHidden: boolean;
   className?: string;
 }
 
 export default function KanjiSplitter({
-  char = "鰯",
+  kanji = "鰯",
   width = 128,
   isHidden = true,
   className = ""
@@ -26,8 +26,8 @@ export default function KanjiSplitter({
     const fetchKanji = async () => {
       try {
         setError(false);
-        if (!char) return;
-        const codePoint = char.codePointAt(0);
+        if (!kanji) return;
+        const codePoint = kanji.codePointAt(0);
         if (codePoint === undefined) throw new Error("Invalid character");
 
         const hex = codePoint.toString(16).padStart(5, '0');
@@ -48,7 +48,7 @@ export default function KanjiSplitter({
     };
     fetchKanji();
     return () => { isMounted = false; };
-  }, [char]);
+  }, [kanji]);
 
   if (error) return <div className={styles.error}>Error</div>;
   if (!svgContent) {

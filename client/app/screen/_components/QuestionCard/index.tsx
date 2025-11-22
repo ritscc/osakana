@@ -9,14 +9,14 @@ interface QuestionCardProps {
   id: number;
   yomi: string;
   kanji: string; // 表示する正解の漢字
-  description?: string;
+  difficulty: number;
 }
 
 export default function QuestionCard({
   id,
   yomi,
   kanji,
-  description = "",
+  difficulty,
 }: QuestionCardProps) {
   const [animationState, setAnimationState] = useState<"idle" | "appearing">("appearing");
 
@@ -42,10 +42,10 @@ export default function QuestionCard({
       onAnimationEnd={handleAnimationEnd}
     >
       <Kanji
-        questionnum={id}
-        answerkanji={kanji}
-        yomikanji={yomi}
-        description={description}
+        id={id}
+        kanji={kanji}
+        yomi={yomi}
+        difficulty={difficulty}
       />
     </div>
   );
