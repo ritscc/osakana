@@ -6,14 +6,14 @@ import Kanji from "../Kanji";
 import styles from "./styles.module.scss";
 
 interface QuestionCardProps {
-  id: number;
+  unicode: number;
   yomi: string;
   kanji: string; // 表示する正解の漢字
   difficulty: number;
 }
 
 export default function QuestionCard({
-  id,
+  unicode,
   yomi,
   kanji,
   difficulty,
@@ -42,7 +42,7 @@ export default function QuestionCard({
       onAnimationEnd={handleAnimationEnd}
     >
       <Kanji
-        id={id}
+        unicode={unicode}
         kanji={kanji}
         yomi={yomi}
         difficulty={difficulty}

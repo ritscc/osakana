@@ -7,16 +7,16 @@ import styles from "./styles/Screen.module.scss";
 
 // デモ用データ
 const INITIAL_QUESTIONS = [
-  { id: 1, yomi: "まぐろ", kanji: "鮪", difficulty: 1 },
-  { id: 2, yomi: "いわし", kanji: "鰯", difficulty: 1 },
-  { id: 3, yomi: "あじ", kanji: "鯵", difficulty: 1 },
-  { id: 4, yomi: "さけ", kanji: "鮭", difficulty: 1 },
-  { id: 5, yomi: "さば", kanji: "鯖", difficulty: 1 },
-  { id: 6, yomi: "かつお", kanji: "鰹", difficulty: 2 },
-  { id: 7, yomi: "たい", kanji: "鯛", difficulty: 2 },
-  { id: 8, yomi: "たら", kanji: "鱈", difficulty: 2 },
-  { id: 9, yomi: "ぶり", kanji: "鰤", difficulty: 2 },
-  { id: 10, yomi: "あゆ", kanji: "鮎", difficulty: 3 },
+  { unicode: 1, yomi: "まぐろ", kanji: "鮪", difficulty: 1 },
+  { unicode: 2, yomi: "いわし", kanji: "鰯", difficulty: 1 },
+  { unicode: 3, yomi: "あじ", kanji: "鯵", difficulty: 1 },
+  { unicode: 4, yomi: "さけ", kanji: "鮭", difficulty: 1 },
+  { unicode: 5, yomi: "さば", kanji: "鯖", difficulty: 1 },
+  { unicode: 6, yomi: "かつお", kanji: "鰹", difficulty: 2 },
+  { unicode: 7, yomi: "たい", kanji: "鯛", difficulty: 2 },
+  { unicode: 8, yomi: "たら", kanji: "鱈", difficulty: 2 },
+  { unicode: 9, yomi: "ぶり", kanji: "鰤", difficulty: 2 },
+  { unicode: 10, yomi: "あゆ", kanji: "鮎", difficulty: 3 },
 ];
 
 export default function Screen() {
@@ -34,9 +34,9 @@ export default function Screen() {
 
         <div className={styles.grid}>
           {questions.map((q) => (
-            <div key={q.id} className={styles.cardWrapper}>
+            <div key={q.unicode} className={styles.cardWrapper}>
               <QuestionCard
-                id={q.id}
+                unicode={q.unicode}
                 yomi={q.yomi}
                 kanji={q.kanji}
                 difficulty={q.difficulty}

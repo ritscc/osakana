@@ -3,13 +3,13 @@ import BubbleContainer from "../BubbleContainer"
 import styles from "./styles.module.scss"
 
 type kanjiProps = {
-  id: number
+  unicode: number
   kanji: string
   yomi: string
   difficulty: number
 }
 
-export default function Kanji({ id, kanji, yomi, difficulty }: kanjiProps) {
+export default function Kanji({ unicode, kanji, yomi, difficulty }: kanjiProps) {
   return (
     <div className={styles.container}>
       {/* 読み */}
