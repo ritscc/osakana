@@ -15,7 +15,6 @@ export default function OceanBackground() {
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
 
   useEffect(() => {
-    // ランダムな泡を生成
     const newBubbles = Array.from({ length: 15 }).map((_, i) => ({
       id: i,
       left: Math.random() * 100, 

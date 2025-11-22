@@ -5,15 +5,15 @@ interface BubbleContainerProps {
   children: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
+  isCorrect?: boolean;
 }
 
-export default function BubbleContainer({ children, className = "", style }: BubbleContainerProps) {
+export default function BubbleContainer({ children, className = "", style, isCorrect = false }: BubbleContainerProps) {
   return (
     <div
-      className={`${styles.container} ${className}`}
+      className={`${styles.container} ${className} ${isCorrect ? styles.correct : ""}`}
       style={style}
     >
-      {/* 泡の反射効果用ハイライト */}
       <div className={styles.highlightTop} />
       <div className={styles.highlightBottom} />
       

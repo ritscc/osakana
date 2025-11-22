@@ -9,6 +9,7 @@ type kanjiProps = {
   difficulty: number
   animationState?: "idle" | "entering" | "exiting"
   index?: number
+  isCorrect?: boolean
 }
 
 export default function Kanji({ 
@@ -17,10 +18,11 @@ export default function Kanji({
   yomi, 
   difficulty,
   animationState = "idle",
-  index = 0
+  index = 0,
+  isCorrect = false
 }: kanjiProps) {
   const staggerDelay = index * 0.15;
-  const yomiExitDelay = staggerDelay + 0.3; // 泡が重なるまで少し待つ
+  const yomiExitDelay = staggerDelay + 0.3;
   const enterBaseDelay = 1.05;
   const bubbleEnterDelay = staggerDelay + enterBaseDelay;
   const yomiEnterTotalDelay = 1.35 + 1.2 + enterBaseDelay;
@@ -55,10 +57,11 @@ export default function Kanji({
               ? `${bubbleEnterDelay}s` 
               : "0s"
         }}
+        isCorrect={isCorrect}
       >
         <KanjiSplitter
           kanji={kanji}
-          isHidden={true}
+          isHidden={!isCorrect}
           width="70%"
         />
       </BubbleContainer>

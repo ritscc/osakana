@@ -20,8 +20,6 @@ export default function KanjiSplitter({
   className = ""
 }: KanjiSplitterProps) {
   const [svgContent, setSvgContent] = useState<string | null>(kanji ? (svgCache[kanji] || null) : null);
-
-
   const [error, setError] = useState<boolean>(false);
 
   useEffect(() => {
@@ -31,7 +29,6 @@ export default function KanjiSplitter({
         setError(false);
         if (!kanji) return;
         
-        // キャッシュにあればそれを使う
         if (svgCache[kanji]) {
           if (isMounted) setSvgContent(svgCache[kanji]);
           return;
@@ -50,7 +47,6 @@ export default function KanjiSplitter({
         const start = text.indexOf('<svg');
         const cleanSvg = start > -1 ? text.substring(start) : text;
 
-        // キャッシュに保存
         svgCache[kanji] = cleanSvg;
 
         if (isMounted) setSvgContent(cleanSvg);

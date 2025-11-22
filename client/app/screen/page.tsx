@@ -5,7 +5,6 @@ import OceanBackground from "./_components/OceanBackground";
 import QuestionCard from "./_components/QuestionCard";
 import styles from "./styles/Screen.module.scss";
 
-// デモ用データ
 const INITIAL_QUESTIONS = [
   { unicode: 1, yomi: "まぐろ", kanji: "鮪", difficulty: 1 },
   { unicode: 2, yomi: "いわし", kanji: "鰯", difficulty: 1 },
@@ -20,17 +19,16 @@ const INITIAL_QUESTIONS = [
 ];
 
 export default function Screen() {
-  // 各問題の正解状態を管理
   const [questions, setQuestions] = useState(INITIAL_QUESTIONS);
   const [exitingQuestions, setExitingQuestions] = useState<typeof INITIAL_QUESTIONS>([]);
   const [isEntering, setIsEntering] = useState(false);
+  const [correctAnswers, setCorrectAnswers] = useState<Set<number>>(new Set());
 
-  // リロード処理
+  const markAsCorrect = (unicode: number) => {
+    setCorrectAnswers(prev => new Set(prev).add(unicode));
+  };
+
   const handleReload = async () => {
-    // 1. バックエンドから新しいデータを取得（非同期）
-    // 本番環境ではここで await fetch('/api/questions') のようにデータを取得します
-    
-    // モック: 通信遅延をシミュレート（0.5秒待機）
     await new Promise(resolve => setTimeout(resolve, 500));
 
     const newQuestions = [...INITIAL_QUESTIONS]
@@ -42,10 +40,12 @@ export default function Screen() {
     
     setExitingQuestions([...questions]);
     setQuestions(newQuestions);
+    setCorrectAnswers(new Set());
     setIsEntering(true);
 
     setTimeout(() => {
       setExitingQuestions([]);
+      setIsEntering(false);
     }, 4000);
   };
 
@@ -59,10 +59,14 @@ export default function Screen() {
         </h1>
 
         <div className={styles.gridWrapper}>
-          {/* メインのグリッド（新しい問題/現在の問題） */}
           <div className={styles.grid}>
             {questions.map((q, i) => (
-              <div key={q.unicode} className={styles.cardWrapper}>
+              <div 
+                key={q.unicode} 
+                className={styles.cardWrapper}
+                onClick={() => markAsCorrect(q.unicode)}
+                style={{ cursor: 'pointer' }}
+              >
                 <QuestionCard
                   unicode={q.unicode}
                   yomi={q.yomi}
@@ -70,12 +74,12 @@ export default function Screen() {
                   difficulty={q.difficulty}
                   animationState={isEntering ? "entering" : "idle"}
                   index={i}
+                  isCorrect={correctAnswers.has(q.unicode)}
                 />
               </div>
             ))}
           </div>
 
-          {/* 退出する問題のグリッド（オーバーレイ） */}
           {exitingQuestions.length > 0 && (
             <div className={`${styles.grid} ${styles.gridOverlay}`}>
               {exitingQuestions.map((q, i) => (
@@ -94,7 +98,6 @@ export default function Screen() {
           )}
         </div>
 
-        {/* 仮のリロードボタン */}
         <button onClick={handleReload} className={styles.reloadButton}>
           問題を入れ替える
         </button>

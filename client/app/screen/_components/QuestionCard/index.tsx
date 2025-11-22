@@ -8,10 +8,11 @@ import styles from "./styles.module.scss";
 interface QuestionCardProps {
   unicode: number;
   yomi: string;
-  kanji: string; // 表示する正解の漢字
+  kanji: string;
   difficulty: number;
   animationState?: "idle" | "entering" | "exiting";
   index?: number;
+  isCorrect?: boolean;
 }
 
 export default function QuestionCard({
@@ -21,10 +22,8 @@ export default function QuestionCard({
   difficulty,
   animationState = "idle",
   index = 0,
+  isCorrect = false,
 }: QuestionCardProps) {
-  // 内部状態は一旦無視して、親からのanimationStateを優先する形にする
-  // もし親から指定がなければデフォルトの挙動（今は特にないが）
-  
   return (
     <div className={styles.container}>
       <Kanji
@@ -34,6 +33,7 @@ export default function QuestionCard({
         difficulty={difficulty}
         animationState={animationState}
         index={index}
+        isCorrect={isCorrect}
       />
     </div>
   );
