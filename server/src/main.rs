@@ -154,18 +154,16 @@ async fn update_question_remaining_time(game_state: SharedGameState) {
             game_state.questions.reset();
             game_state.questions.reset_time();
 
-            if let Err(error) = game_state.tx.send(SseEvent::ReloadQuestions {
+            SseEvent::ReloadQuestions {
                 questions: game_state.questions.clone(),
-            }) {
-                tracing::error!("Failed to send SseEvent: {error}");
             }
+            .send_by(&game_state.tx);
         }
 
-        if let Err(error) = game_state.tx.send(SseEvent::RemainingTimePercentage {
+        SseEvent::RemainingTimePercentage {
             percentage: game_state.questions.remaining_time_percentage(),
-        }) {
-            tracing::error!("Failed to send SseEvent: {error}");
         }
+        .send_by(&game_state.tx);
     }
 }
 

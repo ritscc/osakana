@@ -1,7 +1,7 @@
 use axum::{Json, extract::State, http::StatusCode};
 use serde::Deserialize;
 
-use crate::SharedGameState;
+use crate::{SharedGameState, sse_event::SseEvent};
 
 #[derive(Clone, Deserialize, Debug)]
 pub struct RegisterRankingRequest {
@@ -31,6 +31,11 @@ pub async fn register_ranking(
     };
 
     game_state.ranking.push(user_cloned);
+
+    SseEvent::UpdateRanking {
+        ranking: game_state.ranking.clone(),
+    }
+    .send_by(&game_state.tx);
 
     tracing::info!("User successfly registered to rank");
 
