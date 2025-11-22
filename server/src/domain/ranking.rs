@@ -62,8 +62,11 @@ pub async fn get_ranking(
 ) -> Result<Json<GetRakingResponse>, StatusCode> {
     let game_state = game_state.lock().await;
 
+    let mut sorted_ranking = game_state.ranking.clone();
+    sorted_ranking.sort_by(|a, b| b.combo().cmp(&a.combo()));
+
     let response = GetRakingResponse {
-        ranking: game_state.ranking.clone(),
+        ranking: sorted_ranking,
     };
 
     Ok(Json(response))

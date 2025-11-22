@@ -1,0 +1,15 @@
+.input_field {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.input {
+  padding: 0.4rem;
+  border: solid 1px;
+  border-radius: 5px;
+}
+
+.submit_button {
+  width: 50px;
+}
