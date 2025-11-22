@@ -1,14 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import AllClear from "./_components/AllClear";
 import OceanBackground from "./_components/OceanBackground";
 import QuestionCard from "./_components/QuestionCard";
 import TimeGauge from "./_components/TimeGauge";
-import AllClear from "./_components/AllClear";
 import styles from "./styles/Screen.module.scss";
 import type {
-  KanjiDifficulty,
   GetCurrentQuestionsResponse,
+  KanjiDifficulty,
   ScreenQuestion,
   ServerQuestion,
   SseEventPayload,
@@ -35,7 +35,8 @@ const toScreenQuestion = (question: ServerQuestion): ScreenQuestion => {
   };
 };
 
-const mapServerQuestions = (items: ServerQuestion[]) => items.map(toScreenQuestion);
+const mapServerQuestions = (items: ServerQuestion[]) =>
+  items.map(toScreenQuestion);
 
 const parseSseEvent = (raw: string): SseEventPayload | null => {
   try {
@@ -48,10 +49,12 @@ const parseSseEvent = (raw: string): SseEventPayload | null => {
 
 export default function Screen() {
   const [questions, setQuestions] = useState<ScreenQuestion[]>([]);
-  const [exitingQuestions, setExitingQuestions] = useState<ScreenQuestion[]>([]);
-  const [exitingCorrectAnswers, setExitingCorrectAnswers] = useState<Set<number>>(
-    () => new Set<number>(),
+  const [exitingQuestions, setExitingQuestions] = useState<ScreenQuestion[]>(
+    [],
   );
+  const [exitingCorrectAnswers, setExitingCorrectAnswers] = useState<
+    Set<number>
+  >(() => new Set<number>());
   const [isEntering, setIsEntering] = useState(false);
   const [correctAnswers, setCorrectAnswers] = useState<Set<number>>(
     () => new Set<number>(),
@@ -92,40 +95,43 @@ export default function Screen() {
     });
   }, []);
 
-  const startQuestionTransition = useCallback((nextQuestions: ScreenQuestion[]) => {
-    if (!nextQuestions.length) {
-      return;
-    }
+  const startQuestionTransition = useCallback(
+    (nextQuestions: ScreenQuestion[]) => {
+      if (!nextQuestions.length) {
+        return;
+      }
 
-    if (transitionTimeoutRef.current) {
-      clearTimeout(transitionTimeoutRef.current);
-      transitionTimeoutRef.current = null;
-    }
+      if (transitionTimeoutRef.current) {
+        clearTimeout(transitionTimeoutRef.current);
+        transitionTimeoutRef.current = null;
+      }
 
-    const previousQuestions = questionsRef.current;
-    const previousCorrectAnswers = correctAnswersRef.current;
+      const previousQuestions = questionsRef.current;
+      const previousCorrectAnswers = correctAnswersRef.current;
 
-    setShowAllClear(false);
+      setShowAllClear(false);
 
-    if (previousQuestions.length > 0) {
-      setExitingQuestions([...previousQuestions]);
-      setExitingCorrectAnswers(new Set(previousCorrectAnswers));
-    } else {
-      setExitingQuestions([]);
-      setExitingCorrectAnswers(new Set<number>());
-    }
+      if (previousQuestions.length > 0) {
+        setExitingQuestions([...previousQuestions]);
+        setExitingCorrectAnswers(new Set(previousCorrectAnswers));
+      } else {
+        setExitingQuestions([]);
+        setExitingCorrectAnswers(new Set<number>());
+      }
 
-    setQuestions(nextQuestions);
-    setCorrectAnswers(new Set<number>());
-    setIsEntering(true);
+      setQuestions(nextQuestions);
+      setCorrectAnswers(new Set<number>());
+      setIsEntering(true);
 
-    transitionTimeoutRef.current = setTimeout(() => {
-      setExitingQuestions([]);
-      setExitingCorrectAnswers(new Set<number>());
-      setIsEntering(false);
-      transitionTimeoutRef.current = null;
-    }, 4000);
-  }, []);
+      transitionTimeoutRef.current = setTimeout(() => {
+        setExitingQuestions([]);
+        setExitingCorrectAnswers(new Set<number>());
+        setIsEntering(false);
+        transitionTimeoutRef.current = null;
+      }, 4000);
+    },
+    [],
+  );
 
   useEffect(() => {
     let isMounted = true;
@@ -137,12 +143,14 @@ export default function Screen() {
       }
 
       try {
-        const response = await fetch(`${BACKEND_URL}/current_questions`, {
+        const response = await fetch(`${BACKEND_URL}/questions/current`, {
           cache: "no-store",
         });
 
         if (!response.ok) {
-          throw new Error(`Failed to fetch current questions (${response.status})`);
+          throw new Error(
+            `Failed to fetch current questions (${response.status})`,
+          );
         }
 
         const data: GetCurrentQuestionsResponse = await response.json();
@@ -176,7 +184,9 @@ export default function Screen() {
       return;
     }
 
-    const eventSource = new EventSource(`${BACKEND_URL}/sse`, { withCredentials: true });
+    const eventSource = new EventSource(`${BACKEND_URL}/sse`, {
+      withCredentials: true,
+    });
 
     eventSource.onopen = () => {
       setIsSseConnected(true);
@@ -199,7 +209,9 @@ export default function Screen() {
       }
 
       if ("ReloadQuestions" in payload) {
-        const mapped = mapServerQuestions(payload.ReloadQuestions.questions.current);
+        const mapped = mapServerQuestions(
+          payload.ReloadQuestions.questions.current,
+        );
         if (mapped.length) {
           startQuestionTransition(mapped);
         }
@@ -221,7 +233,9 @@ export default function Screen() {
       return;
     }
 
-    const allAnswered = questions.every((question) => correctAnswers.has(question.index));
+    const allAnswered = questions.every((question) =>
+      correctAnswers.has(question.index),
+    );
     if (!allAnswered) {
       return;
     }
@@ -243,7 +257,10 @@ export default function Screen() {
         <div className={styles.gridWrapper}>
           <div className={styles.grid}>
             {questions.map((q, i) => (
-              <div key={`${q.index}-${q.unicodeHex}`} className={styles.cardWrapper}>
+              <div
+                key={`${q.index}-${q.unicodeHex}`}
+                className={styles.cardWrapper}
+              >
                 <QuestionCard
                   unicode={q.unicode}
                   yomi={q.yomi}
@@ -260,7 +277,10 @@ export default function Screen() {
           {exitingQuestions.length > 0 && (
             <div className={`${styles.grid} ${styles.gridOverlay}`}>
               {exitingQuestions.map((q, i) => (
-                <div key={`${q.index}-${q.unicodeHex}-exiting`} className={styles.cardWrapper}>
+                <div
+                  key={`${q.index}-${q.unicodeHex}-exiting`}
+                  className={styles.cardWrapper}
+                >
                   <QuestionCard
                     unicode={q.unicode}
                     yomi={q.yomi}
@@ -277,7 +297,9 @@ export default function Screen() {
         </div>
 
         {!isSseConnected && (
-          <div className={styles.connectionStatus}>リアルタイム接続を再試行しています...</div>
+          <div className={styles.connectionStatus}>
+            リアルタイム接続を再試行しています...
+          </div>
         )}
       </div>
     </div>

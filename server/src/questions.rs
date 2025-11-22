@@ -4,8 +4,6 @@ use std::time::Duration;
 
 use crate::{KANJIS, kanji::Kanji};
 
-const TOTAL_TIME: Duration = Duration::from_secs(30);
-
 #[derive(Debug, Clone, Serialize)]
 pub struct Question {
     index: usize,
@@ -31,10 +29,23 @@ impl Question {
     }
 }
 
-#[derive(Clone, Default, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct Questions {
     current: Vec<Question>,
+    total_time: Duration,
     remaining_time: Duration,
+}
+
+impl Default for Questions {
+    fn default() -> Self {
+        let default_total_time = Duration::from_mins(1);
+
+        Questions {
+            current: Vec::default(),
+            total_time: default_total_time,
+            remaining_time: default_total_time,
+        }
+    }
 }
 
 impl Questions {
@@ -57,19 +68,23 @@ impl Questions {
             .collect();
     }
 
+    pub fn set_total_time(&mut self, time: Duration) {
+        self.total_time = time;
+    }
+
     pub fn decrease_remaining_time(&mut self, duration: Duration) {
         self.remaining_time = self.remaining_time.saturating_sub(duration);
     }
 
     pub fn remaining_time_percentage(&self) -> f64 {
         let remaining_secs = self.remaining_time.as_secs_f64();
-        let total_secs = TOTAL_TIME.as_secs_f64();
+        let total_secs = self.total_time.as_secs_f64();
 
         (remaining_secs / total_secs) * 100.0
     }
 
     pub fn reset_time(&mut self) {
-        self.remaining_time = TOTAL_TIME;
+        self.remaining_time = self.total_time;
     }
 
     pub fn is_remaining_time_zero(&self) -> bool {
