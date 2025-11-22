@@ -29,9 +29,10 @@ pub async fn receive_answer(
         .get_mut(request.question_index)
         .ok_or(StatusCode::NOT_FOUND)?;
 
+    let was_already_solved = question.is_solved();
     let is_correct = question.judge_correction(&request.kanji_unicode);
 
-    if is_correct {
+    if is_correct && !was_already_solved {
         question.solved();
     }
 
@@ -40,10 +41,12 @@ pub async fn receive_answer(
         .get_mut(&request.user_id)
         .ok_or(StatusCode::NOT_FOUND)?;
 
-    if is_correct {
-        user.increment_combo();
-    } else {
-        user.reset_combo();
+    if !was_already_solved {
+        if is_correct {
+            user.increment_combo();
+        } else {
+            user.reset_combo();
+        }
     }
 
     let response = Response {

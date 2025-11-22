@@ -19,7 +19,7 @@ export default async function ProcessPage({ searchParams }: PageProps) {
   }
 
   console.log("[サーバー] 処理完了。メインページにリダイレクトします。");
-  const isCorrect = apiResponse.result?.isCorrect ?? false;
-  const combo = apiResponse.result?.combo ?? 0;
+  const isCorrect = apiResponse?.is_correct ?? false;
+  const combo = apiResponse?.combo ?? 0;
   redirect(`/mobile/?result=${isCorrect}&combo=${combo}`);
 }

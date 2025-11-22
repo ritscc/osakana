@@ -27,6 +27,10 @@ impl Question {
     pub fn solved(&mut self) {
         self.is_solved = true;
     }
+
+    pub fn is_solved(&self) -> bool {
+        self.is_solved
+    }
 }
 
 #[derive(Clone, Debug, Serialize)]
