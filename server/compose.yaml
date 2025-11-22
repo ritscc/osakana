@@ -1,7 +1,25 @@
+name: osakana
+
 services:
   osakana_server:
     build:
       context: ./
       dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
+    environment:
+      - FRONTEND_URL=https://osakana.vercel.app
+    networks:
+      - osakana_network
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARED_TOKEN}
+    env_file:
+      - .env
+    networks:
+      - osakana_network
+    depends_on:
+      - osakana_server
+
+networks:
+  osakana_network:
+    driver: bridge
