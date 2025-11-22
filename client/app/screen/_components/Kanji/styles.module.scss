@@ -21,9 +21,65 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  z-index: 10;
 
   @media (min-width: 768px) {
     width: 12rem;
     height: 12rem;
   }
+}
+
+// アニメーション定義
+@keyframes flyUp {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-150vh);
+  }
+}
+
+@keyframes flyIn {
+  0% {
+    transform: translateY(150vh);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.exitingBubble {
+  animation: flyUp 1.2s ease-in both;
+}
+
+.enteringBubble {
+  animation: flyIn 1.2s ease-out both;
+}
+
+.exitingYomi {
+  animation: fadeOut 0.3s linear forwards;
+}
+
+.enteringYomi {
+  opacity: 0;
+  animation: fadeIn 0.5s ease-out forwards;
 }

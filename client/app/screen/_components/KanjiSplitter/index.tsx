@@ -10,13 +10,16 @@ interface KanjiSplitterProps {
   className?: string;
 }
 
+// SVGデータのキャッシュ
+const svgCache: Record<string, string> = {};
+
 export default function KanjiSplitter({
   kanji = "鰯",
   width = 128,
   isHidden = true,
   className = ""
 }: KanjiSplitterProps) {
-  const [svgContent, setSvgContent] = useState<string | null>(null);
+  const [svgContent, setSvgContent] = useState<string | null>(kanji ? (svgCache[kanji] || null) : null);
 
 
   const [error, setError] = useState<boolean>(false);
@@ -27,6 +30,13 @@ export default function KanjiSplitter({
       try {
         setError(false);
         if (!kanji) return;
+        
+        // キャッシュにあればそれを使う
+        if (svgCache[kanji]) {
+          if (isMounted) setSvgContent(svgCache[kanji]);
+          return;
+        }
+
         const codePoint = kanji.codePointAt(0);
         if (codePoint === undefined) throw new Error("Invalid character");
 
@@ -39,6 +49,9 @@ export default function KanjiSplitter({
 
         const start = text.indexOf('<svg');
         const cleanSvg = start > -1 ? text.substring(start) : text;
+
+        // キャッシュに保存
+        svgCache[kanji] = cleanSvg;
 
         if (isMounted) setSvgContent(cleanSvg);
       } catch (err) {

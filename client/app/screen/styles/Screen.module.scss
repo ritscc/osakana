@@ -47,3 +47,45 @@
 .cardWrapper {
   cursor: pointer;
 }
+
+.gridWrapper {
+  position: relative;
+  width: 100%;
+  max-width: 80rem; /* max-w-7xl */
+  /* Gridの高さ確保のために、メインのGridはrelativeで配置し、Exitingはabsoluteで重ねる */
+}
+
+.gridOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* クリックを透過させる */
+  z-index: 20;
+}
+
+.reloadButton {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1rem 2rem;
+  background-color: #ffffff;
+  color: #0284c7;
+  font-weight: bold;
+  border-radius: 9999px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  z-index: 50;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: #f0f9ff;
+    transform: translateX(-50%) scale(1.05);
+  }
+
+  &:active {
+    transform: translateX(-50%) scale(0.95);
+  }
+}

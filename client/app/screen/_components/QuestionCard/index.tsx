@@ -10,6 +10,8 @@ interface QuestionCardProps {
   yomi: string;
   kanji: string; // 表示する正解の漢字
   difficulty: number;
+  animationState?: "idle" | "entering" | "exiting";
+  index?: number;
 }
 
 export default function QuestionCard({
@@ -17,35 +19,21 @@ export default function QuestionCard({
   yomi,
   kanji,
   difficulty,
+  animationState = "idle",
+  index = 0,
 }: QuestionCardProps) {
-  const [animationState, setAnimationState] = useState<"idle" | "appearing">("appearing");
-
-  useEffect(() => {
-    // データ変更時に出現アニメーションへリセット
-    setAnimationState("appearing");
-  }, [yomi, kanji]);
-
-  // アニメーション終了時の処理
-  const handleAnimationEnd = () => {
-    if (animationState === "appearing") {
-      setAnimationState("idle");
-    }
-  };
-
+  // 内部状態は一旦無視して、親からのanimationStateを優先する形にする
+  // もし親から指定がなければデフォルトの挙動（今は特にないが）
+  
   return (
-    <div
-      className={`${styles.container} ${
-        animationState === "appearing"
-          ? styles.appearing
-          : ""
-      }`}
-      onAnimationEnd={handleAnimationEnd}
-    >
+    <div className={styles.container}>
       <Kanji
         unicode={unicode}
         kanji={kanji}
         yomi={yomi}
         difficulty={difficulty}
+        animationState={animationState}
+        index={index}
       />
     </div>
   );
