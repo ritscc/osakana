@@ -8,12 +8,20 @@ const TOTAL_TIME: Duration = Duration::from_secs(30);
 
 #[derive(Debug, Clone, Serialize)]
 pub struct Question {
-    index: i32,
+    index: usize,
     kanji: Kanji,
     is_solved: bool,
 }
 
 impl Question {
+    fn new(index: usize, kanji: Kanji) -> Self {
+        Question {
+            index,
+            kanji,
+            is_solved: false,
+        }
+    }
+
     pub fn judge_correction(&self, kanji_unicode: u32) -> bool {
         self.kanji.unicode == kanji_unicode
     }
@@ -21,16 +29,11 @@ impl Question {
 
 #[derive(Clone, Default)]
 pub struct Questions {
-    all: Vec<Question>,
     current: Vec<Question>,
     remaining_time: Duration,
 }
 
 impl Questions {
-    pub fn load() -> Self {
-        todo!()
-    }
-
     pub fn get(&self, question_id: usize) -> Option<&Question> {
         self.current.get(question_id)
     }
@@ -39,11 +42,12 @@ impl Questions {
         &self.current
     }
 
-    pub fn reset(&mut self) {
-        self.current = self
-            .all
+    pub fn reset(&mut self, kanjis: &[Kanji]) {
+        self.current = kanjis
             .choose_multiple(&mut rand::rng(), 10)
             .cloned()
+            .enumerate()
+            .map(|(index, kanji)| Question::new(index, kanji))
             .collect();
     }
 
