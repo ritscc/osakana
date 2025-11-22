@@ -7,7 +7,7 @@ use crate::{SharedGameState, sse_event::SseEvent};
 pub struct ReceiveAnswerRequest {
     pub user_id: String,
     pub question_index: usize,
-    pub kanji_unicode: u32,
+    pub kanji_unicode: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -28,7 +28,7 @@ pub async fn receive_answer(
         .questions
         .get(request.question_index)
         .ok_or(StatusCode::NOT_FOUND)?
-        .judge_correction(request.kanji_unicode);
+        .judge_correction(&request.kanji_unicode);
 
     let user = game_state
         .participants

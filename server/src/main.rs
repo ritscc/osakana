@@ -123,7 +123,7 @@ async fn sse_handler(
 }
 
 async fn update_question_remaining_time(game_state: SharedGameState) {
-    const UPDATE_INTERVAL: Duration = Duration::from_millis(33);
+    const UPDATE_INTERVAL: Duration = Duration::from_millis(500);
 
     let mut interval = interval(UPDATE_INTERVAL);
 

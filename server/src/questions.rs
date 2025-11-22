@@ -22,7 +22,7 @@ impl Question {
         }
     }
 
-    pub fn judge_correction(&self, kanji_unicode: u32) -> bool {
+    pub fn judge_correction(&self, kanji_unicode: &str) -> bool {
         self.kanji.unicode == kanji_unicode
     }
 }
