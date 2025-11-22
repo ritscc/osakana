@@ -31,7 +31,7 @@ use crate::{
     domain::{
         answer::receive_answer,
         questions::{get_current_questions, update_questions_total_time},
-        ranking::{get_ranking, register_ranking},
+        ranking::{get_ranking, load_ranking_from_file, register_ranking},
         user::create_user,
     },
     kanji::{Kanji, load_kanjis},
@@ -49,12 +49,12 @@ pub struct GameState {
 }
 
 impl GameState {
-    fn new(tx: broadcast::Sender<SseEvent>) -> Self {
+    fn new(tx: broadcast::Sender<SseEvent>, ranking: Vec<User>) -> Self {
         let mut game_state = GameState {
             tx,
             questions: Questions::default(),
             participants: Users::default(),
-            ranking: Vec::default(),
+            ranking,
         };
         game_state.questions.reset();
         game_state
@@ -81,8 +81,10 @@ async fn main() {
 
     KANJIS.get_or_init(load_kanjis);
 
+    let ranking = load_ranking_from_file().await;
+
     let (tx, _) = broadcast::channel(10);
-    let game_state = GameState::new(tx);
+    let game_state = GameState::new(tx, ranking);
     let game_state = Arc::new(Mutex::new(game_state));
 
     let game_state_cloned = Arc::clone(&game_state);
