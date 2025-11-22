@@ -1,17 +1,20 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import styles from "./styles.module.scss";
 
 interface KanjiSplitterProps {
   char?: string;
-  width?: number;
+  width?: number | string;
   isHidden: boolean;
+  className?: string;
 }
 
 export default function KanjiSplitter({
   char = "鰯",
   width = 128,
-  isHidden = true
+  isHidden = true,
+  className = ""
 }: KanjiSplitterProps) {
   const [svgContent, setSvgContent] = useState<string | null>(null);
 
@@ -47,11 +50,11 @@ export default function KanjiSplitter({
     return () => { isMounted = false; };
   }, [char]);
 
-  if (error) return <div className="text-red-500 text-sm">Error</div>;
+  if (error) return <div className={styles.error}>Error</div>;
   if (!svgContent) {
     return (
       <div
-        className="flex items-center justify-center bg-gray-100 rounded animate-pulse text-gray-400 text-xs"
+        className={styles.loading}
         style={{ width, height: width }}
       >
         Loading...
@@ -60,33 +63,10 @@ export default function KanjiSplitter({
   }
 
   return (
-    <div className="flex flex-col items-center gap-4 p-6 rounded-xl w-fit">
+    <div className={`${styles.container} ${className}`}>
       <div
         style={{ width, height: width }}
-        className={`
-          /* 全体の基本スタイル */
-          flex
-          justify-center
-          items-center
-          [&_text]:hidden
-          [&_path]:fill-none 
-          [&_path]:stroke-[6] 
-          [&_path]:stroke-linecap-round 
-          [&_path]:stroke-linejoin-round
-          [&_path]:stroke-gray-800 /* デフォルトの文字色 */
-
-          /* グループ(gタグ)に対してトランジションを設定 */
-          [&_g]:transition-opacity [&_g]:duration-500 [&_g]:ease-in-out
-          
-          /* ▼ ここで表示・非表示を制御 ▼
-             isRightHidden が true の場合:
-             IDが "-g2" で終わるグループ（右側/第2要素）の不透明度を0にする
-          */
-          ${isHidden
-            ? '[&_g[id$="-g6"]]:opacity-0  bg-white '
-            : '[&_g[id$="-g2"]]:opacity-100 bg-green-300'
-          }
-        `}
+        className={`${styles.svgContainer} ${isHidden ? styles.hiddenRight : styles.visibleRight}`}
         dangerouslySetInnerHTML={{ __html: svgContent }}
       />
 

@@ -1,3 +1,50 @@
+"use client";
+
+import { useState } from "react";
+import OceanBackground from "./_components/OceanBackground";
+import QuestionCard from "./_components/QuestionCard";
+import styles from "./styles/Screen.module.scss";
+
+// デモ用データ
+const INITIAL_QUESTIONS = [
+  { id: 1, yomi: "まぐろ", kanji: "鮪" },
+  { id: 2, yomi: "いわし", kanji: "鰯" },
+  { id: 3, yomi: "あじ", kanji: "鯵" },
+  { id: 4, yomi: "さけ", kanji: "鮭" },
+  { id: 5, yomi: "さば", kanji: "鯖" },
+  { id: 6, yomi: "かつお", kanji: "鰹" },
+  { id: 7, yomi: "たい", kanji: "鯛" },
+  { id: 8, yomi: "たら", kanji: "鱈" },
+  { id: 9, yomi: "ぶり", kanji: "鰤" },
+  { id: 10, yomi: "あゆ", kanji: "鮎" },
+];
+
 export default function Screen() {
-  return <div></div>;
+  // 各問題の正解状態を管理
+  const [questions, setQuestions] = useState(INITIAL_QUESTIONS);
+
+  return (
+    <div className={styles.container}>
+      <OceanBackground />
+      
+      <div className={styles.content}>
+        <h1 className={styles.title}>
+          魚へん漢字クイズ
+        </h1>
+
+        <div className={styles.grid}>
+          {questions.map((q) => (
+            <div key={q.id} className={styles.cardWrapper}>
+              <QuestionCard
+                id={q.id}
+                yomi={q.yomi}
+                kanji={q.kanji}
+                description="魚の説明"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 }

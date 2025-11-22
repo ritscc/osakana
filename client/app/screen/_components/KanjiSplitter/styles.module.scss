@@ -1,0 +1,66 @@
+// Force rebuild
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 0;
+  border-radius: 0.75rem;
+  width: fit-content;
+}
+
+.error {
+  color: #ef4444; /* text-red-500 */
+  font-size: 0.875rem; /* text-sm */
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f3f4f6; /* bg-gray-100 */
+  border-radius: 0.25rem;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  color: #9ca3af; /* text-gray-400 */
+  font-size: 0.75rem; /* text-xs */
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}
+
+.svgContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Global SVG styles scoped to svgContainer */
+.svgContainer :global(text) {
+  display: none;
+}
+
+.svgContainer :global(path) {
+  fill: none;
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke: #1a365d;
+}
+
+.svgContainer :global(g) {
+  transition: opacity 0.5s ease-in-out;
+}
+
+.svgContainer.hiddenRight :global(g[id$="-g6"]) {
+  opacity: 0;
+}
+
+.svgContainer.visibleRight :global(g[id$="-g2"]) {
+  opacity: 1;
+}
