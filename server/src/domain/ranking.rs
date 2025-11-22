@@ -63,7 +63,7 @@ pub async fn get_ranking(
     let game_state = game_state.lock().await;
 
     let mut sorted_ranking = game_state.ranking.clone();
-    sorted_ranking.sort_by(|a, b| b.combo().cmp(&a.combo()));
+    sorted_ranking.sort_by(|a, b| b.max_combo().cmp(&a.max_combo()));
 
     let response = GetRakingResponse {
         ranking: sorted_ranking,

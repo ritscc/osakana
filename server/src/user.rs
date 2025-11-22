@@ -5,6 +5,8 @@ pub struct User {
     id: String,
     username: Option<String>,
     combo: u32,
+    #[serde(default)]
+    max_combo: u32,
 }
 
 impl User {
@@ -16,6 +18,7 @@ impl User {
             id: id.as_ref().to_string(),
             username: None,
             combo: 0,
+            max_combo: 0,
         }
     }
 
@@ -27,8 +30,15 @@ impl User {
         self.combo
     }
 
+    pub fn max_combo(&self) -> u32 {
+        self.max_combo
+    }
+
     pub fn increment_combo(&mut self) {
         self.combo += 1;
+        if self.combo > self.max_combo {
+            self.max_combo = self.combo;
+        }
     }
 
     pub fn reset_combo(&mut self) {

@@ -4,6 +4,7 @@ type User = {
   id: string;
   username: string | null;
   combo: number;
+  max_combo: number;
 };
 
 type RankingResponse = {
@@ -27,7 +28,7 @@ export default async function RankPage() {
   const players = data.ranking.map((user) => ({
     id: user.id,
     name: user.username ?? "Unknown",
-    score: user.combo,
+    score: user.max_combo,
   }));
 
   return (
