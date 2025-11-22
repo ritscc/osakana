@@ -50,7 +50,9 @@ pub type SharedGameAssets = Arc<GameAssets>;
 
 #[tokio::main]
 async fn main() {
-    dotenvy::dotenv().expect("failed to load .env");
+    if let Err(err) = dotenvy::dotenv() {
+        tracing::warn!("Failed to load .env (continuing without it): {}", err);
+    }
 
     tracing_subscriber::registry()
         .with(
