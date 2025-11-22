@@ -1,0 +1,98 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.containerCorrect .yomi {
+  color: #FFD700;
+  transform: scale(1.1);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.yomi {
+  margin-bottom: 1rem;
+  font-size: 1.875rem; /* text-3xl (same as title) */
+  line-height: 2.25rem;
+  font-weight: 700; /* font-bold */
+  color: #333333;
+  letter-spacing: 0.05em; /* tracking-wider */
+  filter: drop-shadow(0 4px 3px rgb(0 0 0 / 0.07)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06)); /* drop-shadow-md approx */
+}
+
+.bubble {
+  width: 9rem;
+  height: 9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 10;
+
+  @media (min-width: 768px) {
+    width: 12rem;
+    height: 12rem;
+  }
+}
+
+.splitter {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// アニメーション定義
+@keyframes flyUp {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-150vh);
+  }
+}
+
+@keyframes flyIn {
+  0% {
+    transform: translateY(150vh);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.exitingBubble {
+  animation: flyUp 1.2s ease-in both;
+}
+
+.enteringBubble {
+  animation: flyIn 1.2s ease-out both;
+}
+
+.exitingYomi {
+  animation: fadeOut 0.01s linear forwards;
+}
+
+.enteringYomi {
+  opacity: 0;
+  animation: fadeIn 0.5s ease-out forwards;
+}
