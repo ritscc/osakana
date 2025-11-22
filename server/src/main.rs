@@ -1,10 +1,12 @@
 use axum::{
     Router,
     extract::{State, WebSocketUpgrade, ws::WebSocket},
+    http::{Method, header},
     routing::{get, post},
 };
-use std::{sync::Arc, time::Duration};
+use std::{env, sync::Arc, time::Duration};
 use tokio::{sync::Mutex, time::interval};
+use tower_http::cors::{AllowOrigin, CorsLayer};
 
 mod domain;
 mod error;
@@ -43,11 +45,27 @@ async fn main() {
     let app_state_cloned = Arc::clone(&app_state);
     tokio::spawn(update_question_remaining_time(app_state_cloned));
 
+    let cors = CorsLayer::new()
+        .allow_origin(AllowOrigin::exact(
+            env::var("FRONTEND_URL")
+                .expect("FRONTEND_URL not found")
+                .parse()
+                .unwrap(),
+        ))
+        .allow_methods(vec![Method::GET, Method::POST, Method::PUT, Method::DELETE])
+        .allow_headers(vec![
+            header::ACCEPT,
+            header::CONTENT_TYPE,
+            header::AUTHORIZATION,
+        ])
+        .allow_credentials(true);
+
     let app = Router::new()
         .route("/register_ranking", post(register_ranking))
         .route("/user", post(create_user))
         .route("/answer", post(receive_answer))
         .route("/websocket", get(websocket_handler))
+        .layer(cors)
         .with_state(app_state);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
