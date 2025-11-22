@@ -2,6 +2,8 @@ import KanjiSplitter from "../KanjiSplitter"
 import BubbleContainer from "../BubbleContainer"
 import styles from "./styles.module.scss"
 
+const FISH_RADICAL_SOURCE = "鰯"
+
 type kanjiProps = {
   unicode: number
   kanji: string
@@ -12,10 +14,10 @@ type kanjiProps = {
   isCorrect?: boolean
 }
 
-export default function Kanji({ 
-  unicode, 
-  kanji, 
-  yomi, 
+export default function Kanji({
+  unicode,
+  kanji,
+  yomi,
   difficulty,
   animationState = "idle",
   index = 0,
@@ -45,7 +47,7 @@ export default function Kanji({
         {yomi}
       </div>
 
-      <BubbleContainer 
+      <BubbleContainer
         className={`${styles.bubble} ${
           animationState === "exiting" ? styles.exitingBubble : 
           animationState === "entering" ? styles.enteringBubble : ""
@@ -59,12 +61,18 @@ export default function Kanji({
         }}
         isCorrect={isCorrect}
       >
-        <KanjiSplitter
-          kanji={kanji}
-          isHidden={!isCorrect}
-          width="70%"
-          className={styles.splitter}
-        />
+        {!isCorrect ? (
+          <KanjiSplitter
+            kanji={FISH_RADICAL_SOURCE}
+            isHidden
+            width="70%"
+            className={styles.splitter}
+          />
+        ) : (
+          <div className={styles.kanjiText}>
+            {kanji}
+          </div>
+        )}
       </BubbleContainer>
     </div>
   )

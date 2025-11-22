@@ -6,8 +6,9 @@ import styles from "./styles.module.scss";
 interface KanjiSplitterProps {
   kanji?: string;
   width?: number | string;
-  isHidden: boolean;
+  isHidden?: boolean;
   className?: string;
+  variant?: "split" | "static";
 }
 
 // SVGデータのキャッシュ
@@ -17,7 +18,8 @@ export default function KanjiSplitter({
   kanji = "鰯",
   width = 128,
   isHidden = true,
-  className = ""
+  className = "",
+  variant = "split"
 }: KanjiSplitterProps) {
   const [svgContent, setSvgContent] = useState<string | null>(kanji ? (svgCache[kanji] || null) : null);
   const [error, setError] = useState<boolean>(false);
@@ -75,7 +77,13 @@ export default function KanjiSplitter({
     <div className={`${styles.container} ${className}`}>
       <div
         style={{ width, height: width }}
-        className={`${styles.svgContainer} ${isHidden ? styles.hiddenRight : styles.visibleRight}`}
+        className={`${styles.svgContainer} ${
+          variant === "static"
+            ? styles.visibleRight
+            : isHidden
+              ? styles.hiddenRight
+              : styles.visibleRight
+        }`}
         dangerouslySetInnerHTML={{ __html: svgContent }}
       />
 
