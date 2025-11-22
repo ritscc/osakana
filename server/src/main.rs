@@ -29,7 +29,9 @@ mod user;
 
 use crate::{
     domain::{
-        answer::receive_answer, questions::get_current_questions, ranking::register_ranking,
+        answer::receive_answer,
+        questions::get_current_questions,
+        ranking::{get_ranking, register_ranking},
         user::create_user,
     },
     kanji::{Kanji, load_kanjis},
@@ -110,6 +112,7 @@ async fn main() {
 
     let app = Router::new()
         .route("/ranking", post(register_ranking))
+        .route("/ranking", get(get_ranking))
         .route("/user", post(create_user))
         .route("/answer", post(receive_answer))
         .route("/current_questions", get(get_current_questions))
@@ -160,18 +163,16 @@ async fn update_question_remaining_time(game_state: SharedGameState) {
             game_state.questions.reset();
             game_state.questions.reset_time();
 
-            if let Err(error) = game_state.tx.send(SseEvent::ReloadQuestions {
+            SseEvent::ReloadQuestions {
                 questions: game_state.questions.clone(),
-            }) {
-                tracing::error!("Failed to send SseEvent: {error}");
             }
+            .send_by(&game_state.tx);
         }
 
-        if let Err(error) = game_state.tx.send(SseEvent::RemainingTimePercentage {
+        SseEvent::RemainingTimePercentage {
             percentage: game_state.questions.remaining_time_percentage(),
-        }) {
-            tracing::error!("Failed to send SseEvent: {error}");
         }
+        .send_by(&game_state.tx);
     }
 }
 

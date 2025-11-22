@@ -44,12 +44,11 @@ pub async fn receive_answer(
         combo: user.combo(),
     };
 
-    if let Err(error) = game_state.tx.send(SseEvent::Answer {
+    SseEvent::Answer {
         index: request.question_index,
         is_correct,
-    }) {
-        tracing::error!("Failed to send SseEvent: {error}");
     }
+    .send_by(&game_state.tx);
 
     Ok(Json(response))
 }
