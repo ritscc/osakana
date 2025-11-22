@@ -3,6 +3,14 @@ import { redirect } from "next/navigation";
 
 export async function GET() {
   const cookieStore = await cookies();
+  
+  // 既にuser_idクッキーが存在する場合は、ユーザー登録をスキップ
+  const existingUserId = cookieStore.get("user_id");
+  if (existingUserId?.value) {
+    redirect("/mobile");
+    return;
+  }
+  
   let user_id = null;
 
   try {
