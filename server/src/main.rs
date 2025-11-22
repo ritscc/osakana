@@ -7,6 +7,7 @@ use axum::{
 use std::{env, sync::Arc, time::Duration};
 use tokio::{sync::Mutex, time::interval};
 use tower_http::cors::{AllowOrigin, CorsLayer};
+use tower_http::trace::TraceLayer;
 use tracing_subscriber::{layer::SubscriberExt as _, util::SubscriberInitExt as _};
 
 mod domain;
@@ -81,6 +82,7 @@ async fn main() {
         .route("/user", post(create_user))
         .route("/answer", post(receive_answer))
         .route("/websocket", get(websocket_handler))
+        .layer(TraceLayer::new_for_http())
         .layer(cors)
         .with_state(app_state);
 
