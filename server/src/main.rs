@@ -28,7 +28,11 @@ mod sse_event;
 mod user;
 
 use crate::{
-    domain::{answer::receive_answer, ranking::register_ranking, user::create_user},
+    domain::{
+        answer::receive_answer,
+        ranking::{get_ranking, register_ranking},
+        user::create_user,
+    },
     kanji::{Kanji, load_kanjis},
     questions::Questions,
     sse_event::SseEvent,
@@ -105,6 +109,7 @@ async fn main() {
 
     let app = Router::new()
         .route("/ranking", post(register_ranking))
+        .route("/ranking", get(get_ranking))
         .route("/user", post(create_user))
         .route("/answer", post(receive_answer))
         .route("/sse", get(sse_handler))
