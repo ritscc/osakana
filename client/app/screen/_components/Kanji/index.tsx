@@ -44,7 +44,12 @@ export default function Kanji({
               : "0s"
         }}
       >
-        {yomi}
+        <div className={styles.indexBadge}>
+          {index + 1}
+        </div>
+        <div className={styles.yomiText}>
+          {yomi}
+        </div>
       </div>
 
       <BubbleContainer
