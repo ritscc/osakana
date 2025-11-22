@@ -22,13 +22,21 @@
 }
 
 .title {
+  position: absolute;
+  top: 4rem;
+  width: 100%;
+  text-align: center;
   font-size: 1.875rem; /* text-3xl */
   line-height: 2.25rem;
   font-weight: 700; /* font-bold */
-  color: #FEFCE8;
-  margin-bottom: 2rem;
+  color: #333333;
+  margin-bottom: 0;
   letter-spacing: 0.1em; /* tracking-widest */
   filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1)); /* drop-shadow-lg approx */
+
+  @media (min-width: 768px) {
+    top: 6rem;
+  }
 }
 
 .grid {

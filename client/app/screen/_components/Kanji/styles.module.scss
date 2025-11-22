@@ -7,10 +7,10 @@
 
 .yomi {
   margin-bottom: 1rem;
-  font-size: 1.5rem; /* text-2xl */
-  line-height: 2rem;
+  font-size: 1.875rem; /* text-3xl (same as title) */
+  line-height: 2.25rem;
   font-weight: 700; /* font-bold */
-  color: #FEFCE8;
+  color: #333333;
   letter-spacing: 0.05em; /* tracking-wider */
   filter: drop-shadow(0 4px 3px rgb(0 0 0 / 0.07)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06)); /* drop-shadow-md approx */
 }
@@ -76,7 +76,7 @@
 }
 
 .exitingYomi {
-  animation: fadeOut 0.3s linear forwards;
+  animation: fadeOut 0.01s linear forwards;
 }
 
 .enteringYomi {

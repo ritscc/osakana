@@ -20,7 +20,7 @@ export default function Kanji({
   index = 0
 }: kanjiProps) {
   const staggerDelay = index * 0.15;
-  const yomiExitDelay = staggerDelay + 0.15;
+  const yomiExitDelay = staggerDelay + 0.3; // 泡が重なるまで少し待つ
   const enterBaseDelay = 1.05;
   const bubbleEnterDelay = staggerDelay + enterBaseDelay;
   const yomiEnterTotalDelay = 1.35 + 1.2 + enterBaseDelay;
