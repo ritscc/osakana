@@ -29,6 +29,10 @@ impl User {
         self.combo += 1;
     }
 
+    pub fn reset_combo(&mut self) {
+        self.combo = 0;
+    }
+
     pub fn set_username<T>(&mut self, username: T)
     where
         T: AsRef<str>,

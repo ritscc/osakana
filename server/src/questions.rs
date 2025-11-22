@@ -25,6 +25,10 @@ impl Question {
     pub fn judge_correction(&self, kanji_unicode: &str) -> bool {
         self.kanji.unicode == kanji_unicode
     }
+
+    pub fn solved(&mut self) {
+        self.is_solved = true;
+    }
 }
 
 #[derive(Clone, Default, Debug, Serialize)]
@@ -34,8 +38,8 @@ pub struct Questions {
 }
 
 impl Questions {
-    pub fn get(&self, question_id: usize) -> Option<&Question> {
-        self.current.get(question_id)
+    pub fn get_mut(&mut self, question_id: usize) -> Option<&mut Question> {
+        self.current.get_mut(question_id)
     }
 
     pub fn current(&self) -> &Vec<Question> {

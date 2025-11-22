@@ -24,11 +24,16 @@ pub async fn receive_answer(
 ) -> Result<Json<Response>, StatusCode> {
     let mut game_state = game_state.lock().await;
 
-    let is_correct = game_state
+    let question = game_state
         .questions
-        .get(request.question_index)
-        .ok_or(StatusCode::NOT_FOUND)?
-        .judge_correction(&request.kanji_unicode);
+        .get_mut(request.question_index)
+        .ok_or(StatusCode::NOT_FOUND)?;
+
+    let is_correct = question.judge_correction(&request.kanji_unicode);
+
+    if is_correct {
+        question.solved();
+    }
 
     let user = game_state
         .participants
@@ -37,6 +42,8 @@ pub async fn receive_answer(
 
     if is_correct {
         user.increment_combo();
+    } else {
+        user.reset_combo();
     }
 
     let response = Response {
