@@ -21,6 +21,7 @@ const INITIAL_QUESTIONS = [
 export default function Screen() {
   const [questions, setQuestions] = useState(INITIAL_QUESTIONS);
   const [exitingQuestions, setExitingQuestions] = useState<typeof INITIAL_QUESTIONS>([]);
+  const [exitingCorrectAnswers, setExitingCorrectAnswers] = useState<Set<number>>(new Set());
   const [isEntering, setIsEntering] = useState(false);
   const [correctAnswers, setCorrectAnswers] = useState<Set<number>>(new Set());
 
@@ -39,12 +40,14 @@ export default function Screen() {
       }));
     
     setExitingQuestions([...questions]);
+    setExitingCorrectAnswers(new Set(correctAnswers));
     setQuestions(newQuestions);
     setCorrectAnswers(new Set());
     setIsEntering(true);
 
     setTimeout(() => {
       setExitingQuestions([]);
+      setExitingCorrectAnswers(new Set());
       setIsEntering(false);
     }, 4000);
   };
@@ -91,6 +94,7 @@ export default function Screen() {
                     difficulty={q.difficulty}
                     animationState="exiting"
                     index={i}
+                    isCorrect={exitingCorrectAnswers.has(q.unicode)}
                   />
                 </div>
               ))}
