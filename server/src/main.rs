@@ -116,10 +116,7 @@ async fn main() {
         .route("/user", post(create_user))
         .route("/answer", post(receive_answer))
         .route("/questions/current", get(get_current_questions))
-        .route(
-            "/questions/remaining_time",
-            post(update_questions_total_time),
-        )
+        .route("/questions/total_time", post(update_questions_total_time))
         .route("/sse", get(sse_handler))
         .layer(TraceLayer::new_for_http())
         .layer(cors)

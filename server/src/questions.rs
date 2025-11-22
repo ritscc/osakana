@@ -4,8 +4,6 @@ use std::time::Duration;
 
 use crate::{KANJIS, kanji::Kanji};
 
-const TOTAL_TIME: Duration = Duration::from_secs(30);
-
 #[derive(Debug, Clone, Serialize)]
 pub struct Question {
     index: usize,
@@ -80,13 +78,13 @@ impl Questions {
 
     pub fn remaining_time_percentage(&self) -> f64 {
         let remaining_secs = self.remaining_time.as_secs_f64();
-        let total_secs = TOTAL_TIME.as_secs_f64();
+        let total_secs = self.total_time.as_secs_f64();
 
         (remaining_secs / total_secs) * 100.0
     }
 
     pub fn reset_time(&mut self) {
-        self.remaining_time = TOTAL_TIME;
+        self.remaining_time = self.total_time;
     }
 
     pub fn is_remaining_time_zero(&self) -> bool {
