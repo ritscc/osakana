@@ -38,6 +38,10 @@ impl Questions {
         self.current.get(question_id)
     }
 
+    pub fn current(&self) -> &Vec<Question> {
+        &self.current
+    }
+
     pub fn reset(&mut self) {
         self.current = KANJIS
             .get()

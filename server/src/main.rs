@@ -28,7 +28,10 @@ mod sse_event;
 mod user;
 
 use crate::{
-    domain::{answer::receive_answer, ranking::register_ranking, user::create_user},
+    domain::{
+        answer::receive_answer, questions::get_current_questions, ranking::register_ranking,
+        user::create_user,
+    },
     kanji::{Kanji, load_kanjis},
     questions::Questions,
     sse_event::SseEvent,
@@ -45,12 +48,14 @@ pub struct GameState {
 
 impl GameState {
     fn new(tx: broadcast::Sender<SseEvent>) -> Self {
-        GameState {
+        let mut game_state = GameState {
             tx,
             questions: Questions::default(),
             participants: Users::default(),
             ranking: Vec::default(),
-        }
+        };
+        game_state.questions.reset();
+        game_state
     }
 }
 
@@ -107,6 +112,7 @@ async fn main() {
         .route("/ranking", post(register_ranking))
         .route("/user", post(create_user))
         .route("/answer", post(receive_answer))
+        .route("/current_questions", get(get_current_questions))
         .route("/sse", get(sse_handler))
         .layer(TraceLayer::new_for_http())
         .layer(cors)
