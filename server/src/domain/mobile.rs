@@ -1,32 +1,48 @@
-use std::sync::Arc;
-
 use axum::{Json, extract::State, http::StatusCode};
 use serde::{Deserialize, Serialize};
-use tokio::sync::Mutex;
 
-use crate::GameState;
+use crate::SharedGameState;
 
 #[derive(Debug, Deserialize)]
 pub struct ReceiveAnswerRequest {
+    pub user_id: String,
     pub question_index: usize,
-    pub kanji_id: u32,
+    pub kanji_unicode: u32,
 }
 
 #[derive(Debug, Serialize)]
 pub struct Response {
-    result: bool,
+    is_correct: bool,
+    combo: u32,
 }
 
 #[axum::debug_handler]
+#[tracing::instrument]
 pub async fn receive_answer(
-    State(game_state): State<Arc<Mutex<GameState>>>,
+    State(game_state): State<SharedGameState>,
     Json(request): Json<ReceiveAnswerRequest>,
 ) -> Result<Json<Response>, StatusCode> {
-    let question_index = request.question_index;
-    let kanji_id = request.kanji_id;
+    let mut game_state = game_state.lock().await;
 
-    let result = game_state.lock().await.judge(question_index, kanji_id);
-    let response = Response { result };
+    let is_correct = game_state
+        .questions
+        .get(request.question_index)
+        .ok_or(StatusCode::NOT_FOUND)?
+        .judge_correction(request.kanji_unicode);
+
+    let user = game_state
+        .participants
+        .get_mut(&request.user_id)
+        .ok_or(StatusCode::NOT_FOUND)?;
+
+    if is_correct {
+        user.increment_combo();
+    }
+
+    let response = Response {
+        is_correct,
+        combo: user.combo(),
+    };
 
     Ok(Json(response))
 }
