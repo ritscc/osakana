@@ -27,22 +27,26 @@ use crate::{
 
 #[derive(Clone, Default, Debug)]
 pub struct GameState {
-    kanjis: Vec<Kanji>,
     questions: Questions,
     participants: Users,
     ranking: Vec<User>,
 }
 
-pub type SharedGameState = Arc<Mutex<GameState>>;
+#[derive(Clone, Debug)]
+pub struct GameAssets {
+    kanjis: Vec<Kanji>,
+}
 
-impl GameState {
-    fn new() -> Self {
-        GameState {
+impl GameAssets {
+    fn load() -> Self {
+        GameAssets {
             kanjis: load_kanjis(),
-            ..Default::default()
         }
     }
 }
+
+pub type SharedGameState = Arc<Mutex<GameState>>;
+pub type SharedGameAssets = Arc<GameAssets>;
 
 #[tokio::main]
 async fn main() {
@@ -56,11 +60,18 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer().pretty())
         .init();
 
-    let app_state = GameState::new();
-    let app_state = Arc::new(Mutex::new(app_state));
+    let game_state = GameState::default();
+    let game_state = Arc::new(Mutex::new(game_state));
 
-    let app_state_cloned = Arc::clone(&app_state);
-    tokio::spawn(update_question_remaining_time(app_state_cloned));
+    let game_assets = GameAssets::load();
+    let game_assets = Arc::new(game_assets);
+
+    let game_state_cloned = Arc::clone(&game_state);
+    let game_assets_cloned = Arc::clone(&game_assets);
+    tokio::spawn(update_question_remaining_time(
+        game_state_cloned,
+        game_assets_cloned,
+    ));
 
     let cors = CorsLayer::new()
         .allow_origin(AllowOrigin::exact(
@@ -84,7 +95,8 @@ async fn main() {
         .route("/websocket", get(websocket_handler))
         .layer(TraceLayer::new_for_http())
         .layer(cors)
-        .with_state(app_state);
+        .with_state(game_state)
+        .with_state(game_assets);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8000").await.unwrap();
     tracing::info!("listening on {}", listener.local_addr().unwrap());
@@ -103,21 +115,27 @@ async fn websocket(mut stream: WebSocket, game_state: SharedGameState) {
     handle_screen(&mut stream, game_state).await.unwrap();
 }
 
-async fn update_question_remaining_time(app_state: SharedGameState) {
+async fn update_question_remaining_time(
+    game_state: SharedGameState,
+    game_assets: SharedGameAssets,
+) {
     const UPDATE_INTERVAL: Duration = Duration::from_millis(33);
 
     let mut interval = interval(UPDATE_INTERVAL);
 
     loop {
         interval.tick().await;
+        let mut game_state = game_state.lock().await;
 
-        let questions = &mut app_state.lock().await.questions;
+        game_state
+            .questions
+            .decrease_remaining_time(UPDATE_INTERVAL);
 
-        questions.decrease_remaining_time(UPDATE_INTERVAL);
+        let is_remaining_time_zero = game_state.questions.is_remaining_time_zero();
 
-        if questions.is_remaining_time_zero() {
-            questions.reset(&app_state.lock().await.kanjis);
-            questions.reset_time();
+        if is_remaining_time_zero {
+            game_state.questions.reset(&game_assets.kanjis);
+            game_state.questions.reset_time();
         }
     }
 }
