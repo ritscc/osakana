@@ -1,52 +1,61 @@
 use axum::{
     Router,
-    extract::{State, WebSocketUpgrade, ws::WebSocket},
+    extract::State,
     http::{Method, header},
+    response::{Sse, sse},
     routing::{get, post},
 };
-use std::{env, sync::Arc, time::Duration};
-use tokio::{sync::Mutex, time::interval};
+use futures_util::Stream;
+use std::{
+    convert::Infallible,
+    env,
+    sync::{Arc, OnceLock},
+    time::Duration,
+};
+use tokio::{
+    sync::{Mutex, broadcast},
+    time::interval,
+};
 use tower_http::cors::{AllowOrigin, CorsLayer};
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::{layer::SubscriberExt as _, util::SubscriberInitExt as _};
 
 mod domain;
-mod error;
 mod kanji;
 mod questions;
+mod sse_event;
 mod user;
 
 use crate::{
-    domain::{
-        mobile::receive_answer, ranking::register_ranking, screen::handle_screen, user::create_user,
-    },
+    domain::{answer::receive_answer, ranking::register_ranking, user::create_user},
     kanji::{Kanji, load_kanjis},
     questions::Questions,
+    sse_event::SseEvent,
     user::{User, Users},
 };
 
-#[derive(Clone, Default, Debug)]
+#[derive(Clone, Debug)]
 pub struct GameState {
     questions: Questions,
     participants: Users,
     ranking: Vec<User>,
+    tx: broadcast::Sender<SseEvent>,
 }
 
-#[derive(Clone, Debug)]
-pub struct GameAssets {
-    kanjis: Vec<Kanji>,
-}
-
-impl GameAssets {
-    fn load() -> Self {
-        GameAssets {
-            kanjis: load_kanjis(),
+impl GameState {
+    fn new(tx: broadcast::Sender<SseEvent>) -> Self {
+        GameState {
+            tx,
+            questions: Questions::default(),
+            participants: Users::default(),
+            ranking: Vec::default(),
         }
     }
 }
 
 pub type SharedGameState = Arc<Mutex<GameState>>;
-pub type SharedGameAssets = Arc<GameAssets>;
+
+static KANJIS: OnceLock<Vec<Kanji>> = OnceLock::new();
 
 #[tokio::main]
 async fn main() {
@@ -60,18 +69,14 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer().pretty())
         .init();
 
-    let game_state = GameState::default();
+    KANJIS.get_or_init(load_kanjis);
+
+    let (tx, _) = broadcast::channel(10);
+    let game_state = GameState::new(tx);
     let game_state = Arc::new(Mutex::new(game_state));
 
-    let game_assets = GameAssets::load();
-    let game_assets = Arc::new(game_assets);
-
     let game_state_cloned = Arc::clone(&game_state);
-    let game_assets_cloned = Arc::clone(&game_assets);
-    tokio::spawn(update_question_remaining_time(
-        game_state_cloned,
-        game_assets_cloned,
-    ));
+    tokio::spawn(update_question_remaining_time(game_state_cloned));
 
     let cors = CorsLayer::new()
         .allow_origin(AllowOrigin::exact(
@@ -92,11 +97,10 @@ async fn main() {
         .route("/ranking", post(register_ranking))
         .route("/user", post(create_user))
         .route("/answer", post(receive_answer))
-        .route("/websocket", get(websocket_handler))
+        .route("/sse", get(sse_handler))
         .layer(TraceLayer::new_for_http())
         .layer(cors)
-        .with_state(game_state)
-        .with_state(game_assets);
+        .with_state(game_state);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8000").await.unwrap();
     tracing::info!("listening on {}", listener.local_addr().unwrap());
@@ -104,21 +108,21 @@ async fn main() {
     axum::serve(listener, app).await.unwrap();
 }
 
-async fn websocket_handler(
-    ws: WebSocketUpgrade,
+async fn sse_handler(
     State(game_state): State<SharedGameState>,
-) -> axum::response::Response {
-    ws.on_upgrade(|stream| websocket(stream, game_state))
+) -> Sse<impl Stream<Item = Result<sse::Event, Infallible>>> {
+    let mut rx = { game_state.lock().await.tx.subscribe() };
+
+    let stream = async_stream::stream! {
+        while let Ok(event) = rx.recv().await {
+          yield Ok(sse::Event::default().data(event.to_string().expect("Serialize Error")));
+        }
+    };
+
+    Sse::new(stream).keep_alive(sse::KeepAlive::default())
 }
 
-async fn websocket(mut stream: WebSocket, game_state: SharedGameState) {
-    handle_screen(&mut stream, game_state).await.unwrap();
-}
-
-async fn update_question_remaining_time(
-    game_state: SharedGameState,
-    game_assets: SharedGameAssets,
-) {
+async fn update_question_remaining_time(game_state: SharedGameState) {
     const UPDATE_INTERVAL: Duration = Duration::from_millis(33);
 
     let mut interval = interval(UPDATE_INTERVAL);
@@ -134,8 +138,20 @@ async fn update_question_remaining_time(
         let is_remaining_time_zero = game_state.questions.is_remaining_time_zero();
 
         if is_remaining_time_zero {
-            game_state.questions.reset(&game_assets.kanjis);
+            game_state.questions.reset();
             game_state.questions.reset_time();
+
+            if let Err(error) = game_state.tx.send(SseEvent::ReloadQuestions {
+                questions: game_state.questions.clone(),
+            }) {
+                tracing::error!("Failed to send SseEvent: {error}");
+            }
+        }
+
+        if let Err(error) = game_state.tx.send(SseEvent::RemainingTimePercentage {
+            percentage: game_state.questions.remaining_time_percentage(),
+        }) {
+            tracing::error!("Failed to send SseEvent: {error}");
         }
     }
 }
