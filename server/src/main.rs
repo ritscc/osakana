@@ -30,7 +30,7 @@ mod user;
 use crate::{
     domain::{
         answer::receive_answer,
-        questions::get_current_questions,
+        questions::{get_current_questions, update_questions_total_time},
         ranking::{get_ranking, register_ranking},
         user::create_user,
     },
@@ -115,7 +115,11 @@ async fn main() {
         .route("/ranking", get(get_ranking))
         .route("/user", post(create_user))
         .route("/answer", post(receive_answer))
-        .route("/current_questions", get(get_current_questions))
+        .route("/questions/current", get(get_current_questions))
+        .route(
+            "/questions/remaining_time",
+            post(update_questions_total_time),
+        )
         .route("/sse", get(sse_handler))
         .layer(TraceLayer::new_for_http())
         .layer(cors)
