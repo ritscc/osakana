@@ -1,0 +1,51 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.comboNumber {
+  font-size: 36px;
+  font-weight: 800;
+  color: #00ffd0;
+  margin-right: 6px;
+  display: inline-block;
+  transition:
+    transform 0.3s,
+    opacity 0.3s;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.comboText {
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+  display: inline-block;
+  transition:
+    transform 0.3s,
+    opacity 0.3s;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.animate {
+  animation: pop 0.5s ease-out;
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.5) translateY(-10px);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 0;
+  }
+}

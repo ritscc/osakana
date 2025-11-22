@@ -1,4 +1,3 @@
-pub mod mobile;
+pub mod answer;
 pub mod ranking;
-pub mod screen;
 pub mod user;

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import type { SearchParams } from "nuqs/server";
 import { loadSearchParams } from "./request/search-params";
 import { Keypad } from "./_components/Keypad";
+import { Combo } from "./_components/combo";
 
 type PageProps = {
   searchParams: Promise<SearchParams>;
@@ -31,6 +32,7 @@ export default async function Mobile({ searchParams }: PageProps) {
   return (
     <div>
       <StatusMessage searchParams={searchParams} />
+      <Combo combo={combo} />
       <Keypad />
     </div>
   );

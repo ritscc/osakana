@@ -2,7 +2,7 @@ use rand::seq::IndexedRandom as _;
 use serde::Serialize;
 use std::time::Duration;
 
-use crate::kanji::Kanji;
+use crate::{KANJIS, kanji::Kanji};
 
 const TOTAL_TIME: Duration = Duration::from_secs(30);
 
@@ -22,12 +22,12 @@ impl Question {
         }
     }
 
-    pub fn judge_correction(&self, kanji_unicode: u32) -> bool {
+    pub fn judge_correction(&self, kanji_unicode: &str) -> bool {
         self.kanji.unicode == kanji_unicode
     }
 }
 
-#[derive(Clone, Default, Debug)]
+#[derive(Clone, Default, Debug, Serialize)]
 pub struct Questions {
     current: Vec<Question>,
     remaining_time: Duration,
@@ -38,12 +38,10 @@ impl Questions {
         self.current.get(question_id)
     }
 
-    pub fn current(&self) -> &Vec<Question> {
-        &self.current
-    }
-
-    pub fn reset(&mut self, kanjis: &[Kanji]) {
-        self.current = kanjis
+    pub fn reset(&mut self) {
+        self.current = KANJIS
+            .get()
+            .unwrap()
             .choose_multiple(&mut rand::rng(), 10)
             .cloned()
             .enumerate()
@@ -53,10 +51,6 @@ impl Questions {
 
     pub fn decrease_remaining_time(&mut self, duration: Duration) {
         self.remaining_time = self.remaining_time.saturating_sub(duration);
-    }
-
-    pub fn remaining_time(&self) -> Duration {
-        self.remaining_time
     }
 
     pub fn remaining_time_percentage(&self) -> f64 {

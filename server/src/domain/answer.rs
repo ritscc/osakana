@@ -1,13 +1,13 @@
 use axum::{Json, extract::State, http::StatusCode};
 use serde::{Deserialize, Serialize};
 
-use crate::SharedGameState;
+use crate::{SharedGameState, sse_event::SseEvent};
 
 #[derive(Debug, Deserialize)]
 pub struct ReceiveAnswerRequest {
     pub user_id: String,
     pub question_index: usize,
-    pub kanji_unicode: u32,
+    pub kanji_unicode: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -28,7 +28,7 @@ pub async fn receive_answer(
         .questions
         .get(request.question_index)
         .ok_or(StatusCode::NOT_FOUND)?
-        .judge_correction(request.kanji_unicode);
+        .judge_correction(&request.kanji_unicode);
 
     let user = game_state
         .participants
@@ -43,6 +43,13 @@ pub async fn receive_answer(
         is_correct,
         combo: user.combo(),
     };
+
+    if let Err(error) = game_state.tx.send(SseEvent::Answer {
+        index: request.question_index,
+        is_correct,
+    }) {
+        tracing::error!("Failed to send SseEvent: {error}");
+    }
 
     Ok(Json(response))
 }

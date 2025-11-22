@@ -9,7 +9,7 @@ pub enum KanjiDifficulty {
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Kanji {
-    pub unicode: u32,
+    pub unicode: String,
     pub yomi: String,
     pub kanji: char,
     pub difficulty: KanjiDifficulty,
@@ -40,20 +40,16 @@ pub fn load_kanjis() -> Vec<Kanji> {
             _ => continue,
         };
 
-        let unicode = if let Some(hex) = unicode_str.strip_prefix("0x") {
-            u32::from_str_radix(hex, 16).unwrap_or(0)
+        let (kanji, unicode) = if let Some(hex) = unicode_str.strip_prefix("0x") {
+            let unicode_16 = u32::from_str_radix(hex, 16).unwrap_or(0);
+            let kanji = char::from_u32(unicode_16).unwrap_or('?');
+            (kanji, hex)
         } else {
-            0
+            continue;
         };
 
-        if unicode == 0 {
-            continue;
-        }
-
-        let kanji = char::from_u32(unicode).unwrap_or('?');
-
         kanjis.push(Kanji {
-            unicode,
+            unicode: unicode.to_owned(),
             yomi,
             kanji,
             difficulty,
