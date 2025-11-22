@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { registerRanking } from "../../actions";
+import styles from "./input-field.module.scss";
 
 export function NameInputField() {
   const [name, setName] = useState("");
@@ -35,21 +36,23 @@ export function NameInputField() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="input">名前を入力</label>
-        <input
-          id="input"
-          name="input"
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-          disabled={loading}
-          placeholder="名前を入力してください"
-        />
-      </div>
-      <button type="submit" disabled={loading || !name}>
+    <form onSubmit={handleSubmit} className={styles.input_field}>
+      <input
+        id="input"
+        className={styles.input}
+        name="input"
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        required
+        disabled={loading}
+        placeholder="名前を入力"
+      />
+      <button
+        type="submit"
+        disabled={loading || !name}
+        className={styles.submit_button}
+      >
         {loading ? "登録中..." : "確定"}
       </button>
     </form>
