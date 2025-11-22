@@ -3,13 +3,14 @@ use serde::Deserialize;
 
 use crate::SharedGameState;
 
-#[derive(Clone, Deserialize)]
+#[derive(Clone, Deserialize, Debug)]
 pub struct RegisterRankingRequest {
     user_id: String,
     username: String,
 }
 
 #[axum::debug_handler]
+#[tracing::instrument]
 pub async fn register_ranking(
     State(game_state): State<SharedGameState>,
     Json(request): Json<RegisterRankingRequest>,
@@ -23,9 +24,15 @@ pub async fn register_ranking(
             .ok_or(StatusCode::NOT_FOUND)?;
 
         user.set_username(request.username);
+
+        tracing::info!("Username is successfly set to user: ${}", user.id());
+
         user.clone()
     };
 
     game_state.ranking.push(user_cloned);
+
+    tracing::info!("User successfly registered to rank");
+
     Ok(StatusCode::OK)
 }

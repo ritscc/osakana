@@ -19,7 +19,7 @@ impl Question {
     }
 }
 
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 pub struct Questions {
     all: Vec<Question>,
     current: Vec<Question>,

@@ -17,6 +17,10 @@ impl User {
         }
     }
 
+    pub fn id(&self) -> &str {
+        &self.id
+    }
+
     pub fn combo(&self) -> u32 {
         self.combo
     }
@@ -34,7 +38,7 @@ impl User {
     }
 }
 
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 pub struct Users(Vec<User>);
 
 impl Users {

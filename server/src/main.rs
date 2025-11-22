@@ -7,6 +7,7 @@ use axum::{
 use std::{env, sync::Arc, time::Duration};
 use tokio::{sync::Mutex, time::interval};
 use tower_http::cors::{AllowOrigin, CorsLayer};
+use tracing_subscriber::{layer::SubscriberExt as _, util::SubscriberInitExt as _};
 
 mod domain;
 mod error;
@@ -22,7 +23,7 @@ use crate::{
     user::{User, Users},
 };
 
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 pub struct GameState {
     questions: Questions,
     participants: Users,
@@ -40,6 +41,14 @@ impl GameState {
 #[tokio::main]
 async fn main() {
     dotenvy::dotenv().expect("failed to load .env");
+
+    tracing_subscriber::registry()
+        .with(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| "debug".into()),
+        )
+        .with(tracing_subscriber::fmt::layer().pretty())
+        .init();
 
     let app_state = GameState::new();
     let app_state = Arc::new(Mutex::new(app_state));
@@ -71,6 +80,7 @@ async fn main() {
         .with_state(app_state);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8000").await.unwrap();
+    tracing::info!("listening on {}", listener.local_addr().unwrap());
 
     axum::serve(listener, app).await.unwrap();
 }

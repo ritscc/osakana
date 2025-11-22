@@ -17,6 +17,7 @@ pub struct Response {
 }
 
 #[axum::debug_handler]
+#[tracing::instrument]
 pub async fn receive_answer(
     State(game_state): State<SharedGameState>,
     Json(request): Json<ReceiveAnswerRequest>,
