@@ -17,13 +17,13 @@ use crate::{
         mobile::receive_answer, ranking::register_ranking, screen::handle_screen, user::create_user,
     },
     questions::Questions,
-    user::User,
+    user::{User, Users},
 };
 
 #[derive(Clone, Default)]
 pub struct GameState {
     questions: Questions,
-    participants: Vec<User>,
+    participants: Users,
     ranking: Vec<User>,
 }
 
@@ -32,14 +32,6 @@ pub type SharedGameState = Arc<Mutex<GameState>>;
 impl GameState {
     fn new() -> Self {
         GameState::default()
-    }
-
-    fn judge(&self, question_id: usize, kanji_id: u32) -> bool {
-        self.questions
-            .current()
-            .get(question_id)
-            .map(|v| v.kanji().unicode == kanji_id)
-            .unwrap_or(false)
     }
 }
 

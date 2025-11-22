@@ -14,8 +14,8 @@ pub struct Question {
 }
 
 impl Question {
-    pub fn kanji(&self) -> &Kanji {
-        &self.kanji
+    pub fn judge_correction(&self, kanji_unicode: u32) -> bool {
+        self.kanji.unicode == kanji_unicode
     }
 }
 
@@ -29,6 +29,10 @@ pub struct Questions {
 impl Questions {
     pub fn load() -> Self {
         todo!()
+    }
+
+    pub fn get(&self, question_id: usize) -> Option<&Question> {
+        self.current.get(question_id)
     }
 
     pub fn current(&self) -> &Vec<Question> {

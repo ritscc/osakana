@@ -17,12 +17,12 @@ impl User {
         }
     }
 
-    pub fn id(&self) -> &str {
-        &self.id
+    pub fn combo(&self) -> u32 {
+        self.combo
     }
 
-    pub fn username(&self) -> Option<&str> {
-        self.username.as_deref()
+    pub fn increment_combo(&mut self) {
+        self.combo += 1;
     }
 
     pub fn set_username<T>(&mut self, username: T)
@@ -34,25 +34,18 @@ impl User {
     }
 }
 
-#[cfg(test)]
-mod test {
-    use super::User;
+#[derive(Clone, Default)]
+pub struct Users(Vec<User>);
 
-    #[test]
-    fn user_get_id() {
-        let user = User::new("0");
-
-        assert_eq!(user.id(), "0");
+impl Users {
+    pub fn get_mut<T>(&mut self, user_id: T) -> Option<&mut User>
+    where
+        T: AsRef<str>,
+    {
+        self.0.iter_mut().find(|user| user.id == user_id.as_ref())
     }
 
-    #[test]
-    fn user_get_name() {
-        let mut user = User::new("0");
-
-        assert_eq!(user.username(), None);
-
-        user.set_username("test_user");
-
-        assert_eq!(user.username(), Some("test_user"));
+    pub fn add(&mut self, user: User) {
+        self.0.push(user);
     }
 }

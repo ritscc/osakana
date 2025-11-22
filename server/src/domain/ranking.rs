@@ -5,7 +5,7 @@ use crate::SharedGameState;
 
 #[derive(Clone, Deserialize)]
 pub struct RegisterRankingRequest {
-    id: String,
+    user_id: String,
     username: String,
 }
 
@@ -19,8 +19,7 @@ pub async fn register_ranking(
     let user_cloned = {
         let user = game_state
             .participants
-            .iter_mut()
-            .find(|user| user.id() == request.id)
+            .get_mut(&request.user_id)
             .ok_or(StatusCode::NOT_FOUND)?;
 
         user.set_username(request.username);
