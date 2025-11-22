@@ -38,7 +38,7 @@ impl GameState {
         self.questions
             .current()
             .get(question_id)
-            .map(|v| v.kanji().id == kanji_id)
+            .map(|v| v.kanji().unicode == kanji_id)
             .unwrap_or(false)
     }
 }

@@ -9,7 +9,7 @@ pub enum KanjiDifficulty {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Kanji {
-    pub id: u32,
+    pub unicode: u32,
     pub yomi: String,
     pub kanji: char,
     pub difficulty: KanjiDifficulty,
