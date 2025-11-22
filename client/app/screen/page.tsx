@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import OceanBackground from "./_components/OceanBackground";
 import QuestionCard from "./_components/QuestionCard";
+import TimeGauge from "./_components/TimeGauge";
+import AllClear from "./_components/AllClear";
 import styles from "./styles/Screen.module.scss";
 
 const INITIAL_QUESTIONS = [
@@ -24,15 +26,47 @@ export default function Screen() {
   const [exitingCorrectAnswers, setExitingCorrectAnswers] = useState<Set<number>>(new Set());
   const [isEntering, setIsEntering] = useState(false);
   const [correctAnswers, setCorrectAnswers] = useState<Set<number>>(new Set());
+  const [timeProgress, setTimeProgress] = useState(100);
+  const [showAllClear, setShowAllClear] = useState(false);
+
+  // Timer effect
+  useEffect(() => {
+    if (isEntering || showAllClear) return;
+
+    const interval = setInterval(() => {
+      setTimeProgress((prev) => Math.max(0, prev - 0.2));
+    }, 100);
+    return () => clearInterval(interval);
+  }, [isEntering, showAllClear]);
+
+  // Trigger reload when time is up
+  useEffect(() => {
+    if (timeProgress === 0) {
+      handleReload();
+    }
+  }, [timeProgress]);
+
+  // Check for all clear
+  useEffect(() => {
+    if (questions.length > 0 && correctAnswers.size === questions.length && !isEntering && !showAllClear) {
+      setShowAllClear(true);
+      setTimeout(() => {
+        handleReload(true);
+        setShowAllClear(false);
+      }, 3000);
+    }
+  }, [correctAnswers, questions.length, isEntering, showAllClear]);
 
   const markAsCorrect = (unicode: number) => {
-    if (isEntering) return;
+    if (isEntering || showAllClear) return;
     setCorrectAnswers(prev => new Set(prev).add(unicode));
   };
 
-  const handleReload = async () => {
+  const handleReload = async (immediate = false) => {
     if (isEntering) return;
-    await new Promise(resolve => setTimeout(resolve, 500));
+    if (!immediate) {
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
 
     const newQuestions = [...INITIAL_QUESTIONS]
       .sort(() => Math.random() - 0.5)
@@ -51,12 +85,15 @@ export default function Screen() {
       setExitingQuestions([]);
       setExitingCorrectAnswers(new Set());
       setIsEntering(false);
+      setTimeProgress(100);
     }, 4000);
   };
 
   return (
     <div className={styles.container}>
+      <TimeGauge progress={timeProgress} />
       <OceanBackground />
+      {showAllClear && <AllClear />}
       
       <div className={styles.content}>
         <h1 className={styles.title}>
@@ -105,7 +142,7 @@ export default function Screen() {
         </div>
 
         <button 
-          onClick={handleReload} 
+          onClick={() => handleReload(false)} 
           className={styles.reloadButton}
           disabled={isEntering}
         >
