@@ -46,23 +46,7 @@ export default function Screen() {
     }
   }, [timeProgress]);
 
-  // Check for all clear
-  useEffect(() => {
-    if (questions.length > 0 && correctAnswers.size === questions.length && !isEntering && !showAllClear) {
-      setShowAllClear(true);
-      setTimeout(() => {
-        handleReload(true);
-        setShowAllClear(false);
-      }, 3000);
-    }
-  }, [correctAnswers, questions.length, isEntering, showAllClear]);
-
-  const markAsCorrect = (unicode: number) => {
-    if (isEntering || showAllClear) return;
-    setCorrectAnswers(prev => new Set(prev).add(unicode));
-  };
-
-  const handleReload = async (immediate = false) => {
+  const handleReload = async (immediate = false, currentCorrectAnswers?: Set<number>) => {
     if (isEntering) return;
     if (!immediate) {
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -76,7 +60,7 @@ export default function Screen() {
       }));
     
     setExitingQuestions([...questions]);
-    setExitingCorrectAnswers(new Set(correctAnswers));
+    setExitingCorrectAnswers(new Set(currentCorrectAnswers || correctAnswers));
     setQuestions(newQuestions);
     setCorrectAnswers(new Set());
     setIsEntering(true);
@@ -87,6 +71,22 @@ export default function Screen() {
       setIsEntering(false);
       setTimeProgress(100);
     }, 4000);
+  };
+
+  const markAsCorrect = (unicode: number) => {
+    if (isEntering || showAllClear) return;
+    
+    const newCorrectAnswers = new Set(correctAnswers);
+    newCorrectAnswers.add(unicode);
+    setCorrectAnswers(newCorrectAnswers);
+
+    if (questions.length > 0 && newCorrectAnswers.size === questions.length) {
+      setShowAllClear(true);
+      setTimeout(() => {
+        handleReload(true, newCorrectAnswers);
+        setShowAllClear(false);
+      }, 3000);
+    }
   };
 
   return (
